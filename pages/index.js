@@ -3,17 +3,22 @@ import Head from 'next/head'
 export async function getServerSideProps(context) {
   const { req, query, res, asPath, pathname } = context;
   const host = req.headers.host
-  const puppeteer = require('puppeteer');
+  // const puppeteer = require('puppeteer');
+  const chromium = require('chrome-aws-lambda');
 
   console.log('sssss', host)
 
   await (async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto('https://tuando.net');
-    await page.screenshot({path: './public/example.png'});
+    try {
+      const browser = await chromium.puppeteer.launch();
+      const page = await browser.newPage();
+      await page.goto('https://tuando.net');
+      await page.screenshot({path: './public/example.png'});
 
-    await browser.close();
+      await browser.close();
+    } catch (e) {
+      console.log('error', e)
+    }
   })();
 
   return { props: {screenshot: host + '/example.png'}
